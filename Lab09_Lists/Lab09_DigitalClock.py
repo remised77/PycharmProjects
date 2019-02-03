@@ -65,7 +65,8 @@ class GUI:
     def
 
 def initializeDigits():
-    for
+    for thing in '':
+        print ('hi')
 
 def main():
     gui = GUI()
