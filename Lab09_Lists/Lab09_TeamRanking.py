@@ -40,18 +40,18 @@ class Team:
             self.losses += 1
 
     def getScores(self):
-        if self.ranking == 'wins':
+        if self.ranking == 'Wins':
             return self.wins
-        if self.ranking == 'draws':
+        if self.ranking == 'Draws':
             return self.draws
-        if self.ranking == 'losses':
+        if self.ranking == 'Losses':
             return self.losses
 
 
 def inputs():
     print()
-    filename = input("What would you like to name the file (TeamRankingInput.py)? ") or 'TeamRankingInput.py'
-    ranking = input("According to what metric ((wins), draws, losses)? ") or "wins"
+    filename = input("What is the name of the input file (TeamRankingInput.py)? ") or 'TeamRankingInput.py'
+    ranking = input("According to what metric ((Wins), Draws, Losses)? ") or "Wins"
     trend = input("According to what trend ((greatest to least), least to greatest)? ") or "greatest to least"
     return filename, ranking, trend
 
@@ -88,10 +88,9 @@ def main():
         for team in allTeams:
             if str(team) in score:
                 team.addGame(score)
+    allTeams.sort(key=lambda team: str(team))
     allTeams.sort(key=lambda team: team.getScores())
-    print(allTeams)
     if not trend == 'least to greatest': allTeams.reverse()
-    print(allTeams)
     printScores(league, ranking, allTeams, trend)
 
 

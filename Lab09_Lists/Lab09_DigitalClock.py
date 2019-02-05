@@ -32,6 +32,7 @@ class Cell:
 
     def unfill(self):
         self.cell.setFill('white')
+        self.cell.setOutline('white')
 
 
 class Digit:
@@ -225,6 +226,7 @@ def main():
         minute1.setTime()
         minute2.setTime()
         m1 = gui.win.getMouse()
+        gui.amInstruction.undraw()
 
 
 main()
