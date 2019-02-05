@@ -3,12 +3,17 @@
 # 01/29/19
 # This program creates team rankings.
 
+
 class Team:
 
     """ This is the description. """
 
-    def __init__(self, name):
+    def __init__(self, name, ranking):
         self.name = name
+        self.ranking = ranking
+        self.wins = 0
+        self.losses = 0
+        self.draws = 0
 
     def __str__(self):
         return self.name
@@ -17,31 +22,60 @@ class Team:
         teams = line.split(' vs ')
         team1 = teams[0]
         team2 = teams[1]
-        if str(team) in team1:
+        if self.name in team1:
+            thisTeam = team1
+            otherTeam = team2
+        elif self.name in team2:
+            thisTeam = team2
+            otherTeam = team1
+        thisScore = thisTeam.split(' ')
+        thisScore.reverse()
+        otherScore = otherTeam.split(' ')
+        otherScore.reverse()
+        if eval(thisScore[0]) > eval(otherScore[0]):
+            self.wins += 1
+        elif eval(thisScore[0]) == eval(otherScore[0]):
+            self.draws += 1
+        elif eval(thisScore[0]) < eval(otherScore[0]):
+            self.losses += 1
 
-
-    def scoreGames(self):
-
+    def getScores(self):
+        if self.ranking == 'wins':
+            return self.wins
+        if self.ranking == 'draws':
+            return self.draws
+        if self.ranking == 'losses':
+            return self.losses
 
 
 def inputs():
+    print()
     filename = input("What would you like to name the file (TeamRankingInput.py)? ") or 'TeamRankingInput.py'
-    ranking = input("According to what metric (wins, draws, losses)? ") or "wins"
-    trend = input("According to what trend (greatest to least)? ") or "greatest to least"
+    ranking = input("According to what metric ((wins), draws, losses)? ") or "wins"
+    trend = input("According to what trend ((greatest to least), least to greatest)? ") or "greatest to least"
     return filename, ranking, trend
 
 
 def readFile(filename):
     infile = open(filename, 'r')
-    contents = [infile.readline(), infile.read]
-    contents[1].split('\n\n')
-    league = contents[0]
-    teamList = contents[1]
-    teamList.split('\n')
-    scores = contents[2]
-    scores.split('\n')
+    league = infile.readline()
+    contents = infile.read()
+    contents = contents.split('\n\n')
+    teamList = contents[0].split('\n')
+    scores = contents[1].split('\n')
     return league, teamList, scores
 
+
+def printScores(league, ranking, allTeams, trend):
+    if trend == "least to greatest": trend = 'Fewest'
+    else: trend = 'Most'
+    print('\n')
+    print(league[:-1] + ' Ranking by {} {}'.format(trend, ranking))
+    print()
+    print('Team                W   D   L')
+    print('----                -   -   -')
+    for team in allTeams:
+        print('{:<20}{}   {}   {}'.format(str(team), str(team.wins), str(team.draws), str(team.losses)))
 
 
 def main():
@@ -49,9 +83,17 @@ def main():
     league, teamList, scores = readFile(filename)
     allTeams = []
     for team in teamList:
-        allTeams.append(Team(team))
+        allTeams.append(Team(team, ranking))
     for score in scores:
         for team in allTeams:
             if str(team) in score:
                 team.addGame(score)
+    allTeams.sort(key=lambda team: team.getScores())
+    print(allTeams)
+    if not trend == 'least to greatest': allTeams.reverse()
+    print(allTeams)
+    printScores(league, ranking, allTeams, trend)
+
+
+main()
 

@@ -91,6 +91,9 @@ class GUI:
         self.amText.setSize(24)
         self.amText.draw(self.win)
         self.changeAMPM(self.am)
+        self.amInstruction = Text(Point(250, 255), "Click to Change AM / PM")
+        self.amInstruction.setSize(8)
+        self.amInstruction.draw(self.win)
 
     def changeAMPM(self, am):
         if am:
@@ -121,11 +124,9 @@ def checkHour(gui, hour1, hour2, am, amChange):
     elif hour1.number == 0 and hour2.number == 0:
         hour1.number = 1
         hour2.number = 2
-    if (hour1.number == 1 and hour2.number == 2) or (hour1.number == 1 and hour2.number == 1) and amChange:
+    if ((hour1.number == 1 and hour2.number == 2) or (hour1.number == 1 and hour2.number == 1)) and amChange:
         am[0] = not am[0]
         gui.changeAMPM(am[0])
-    amChange = True
-    return amChange
 
 
 def checkMinute(minute1, minute2, hour2, amChange):
@@ -145,7 +146,6 @@ def checkMinute(minute1, minute2, hour2, amChange):
     elif minute2.number == -1:
         minute1.number += -1
         minute2.number = 9
-        amChange = True
     return amChange
 
 
@@ -192,19 +192,16 @@ def takeEntry(str, hour1, hour2, minute1, minute2):
             minute2.number = eval(minutes[1])
         return True
 
-
 def main():
     gui = GUI()
     hour1, hour2, minute1, minute2 = initializeDigits(gui)
     hour1.number, hour2.number = 1, 2
     m1 = Point(0, 0)
     am = [True]
-    hour1.setTime()
-    hour2.setTime()
-    minute1.setTime()
-    minute2.setTime()
-    amChange = True
+    amChange = False
     while not gui.quit.clicked(m1):
+        if hour1.number == 1 and hour2.number == 0 or hour1.number == 0 and hour2.number == 1:
+            amChange = False
         if gui.upHour.clicked(m1):
             hour2.number += 1
         elif gui.upMinute.clicked(m1):
@@ -216,11 +213,13 @@ def main():
             minute2.number += -1
             amChange = False
         elif gui.change.clicked(m1):
-            takeEntry(gui.entry.getText(), hour1, hour2, minute1, minute2)
+            am = [takeEntry(gui.entry.getText(), hour1, hour2, minute1, minute2)]
             gui.entry.setText('')
+            gui.changeAMPM(am[0])
             amChange = False
         amChange = checkMinute(minute1, minute2, hour2, amChange)
-        amChange = checkHour(gui, hour1, hour2, am, amChange)
+        checkHour(gui, hour1, hour2, am, amChange)
+        amChange = True
         hour1.setTime()
         hour2.setTime()
         minute1.setTime()
