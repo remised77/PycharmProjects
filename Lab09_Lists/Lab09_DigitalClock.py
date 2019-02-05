@@ -108,21 +108,27 @@ def initializeDigits(gui):
     return hour1, hour2, minute1, minute2
 
 
-def checkHour(gui, hour1, hour2, am):
+def checkHour(gui, hour1, hour2, am, amChange):
     if hour2.number == 10:
         hour2.number = 0
         hour1.number = 1
     elif hour2.number == 3 and hour1.number == 1:
         hour1.number = 0
         hour2.number = 1
-    if hour1.number == 0 and hour2.number == 0:
+    if hour1.number == 1 and hour2.number == -1:
+        hour1.number = 0
         hour2.number = 9
-    if hour1.number == 1 and hour2.number == 2:
+    elif hour1.number == 0 and hour2.number == 0:
+        hour1.number = 1
+        hour2.number = 2
+    if (hour1.number == 1 and hour2.number == 2) or (hour1.number == 1 and hour2.number == 1) and amChange:
         am[0] = not am[0]
         gui.changeAMPM(am[0])
+    amChange = True
+    return amChange
 
 
-def checkMinute(minute1, minute2, hour1, hour2, am, gui):
+def checkMinute(minute1, minute2, hour2, amChange):
     if minute2.number == 10:
         minute2.number = 0
         minute1.number += 1
@@ -130,35 +136,61 @@ def checkMinute(minute1, minute2, hour1, hour2, am, gui):
         hour2.number += 1
         minute1.number = 0
         minute2.number = 0
-        checkHour(gui, hour1, hour2, am)
+        amChange = True
+    if minute1.number == 0 and minute2.number == -1:
+        minute1.number = 5
+        minute2.number = 9
+        hour2.number += -1
+        amChange = True
+    elif minute2.number == -1:
+        minute1.number += -1
+        minute2.number = 9
+        amChange = True
+    return amChange
 
 
 def takeEntry(str, hour1, hour2, minute1, minute2):
     error = False
-    for ch in str:
-        if not (ch.isdigit() or ch == ':'):
-            error = True
-    if not error:
-        numbers = str.split(':')
-        if not len(numbers) == 2:
-            error = True
-        if not (len(numbers[0]) == 1 or len(numbers[0]) == 2) or not(len(numbers[0]) == 1 or len(numbers[0]) == 2):
-            error = True
-    if not error:
+    try:
+        for ch in str:
+            if not (ch.isdigit() or ch == ':'):
+                error = True
+        if not error:
+            numbers = str.split(':')
+            if not len(numbers) == 2:
+                error = True
+            if not (len(numbers[0]) == 1 or len(numbers[0]) == 2) or not(len(numbers[1]) == 2):
+                error = True
         hours = numbers[0]
+        minutes = numbers[1]
+        if not error:
+            if minutes[0] == '0':
+                minutes = minutes[1]
+            if hours[0] == '0':
+                hours = hours[1]
+        testHours = eval(hours)
+        testMins = eval(minutes)
+    except:
+        error = True
+    if not error:
+        if eval(hours) < 1 or eval(hours) > 12:
+            error = True
+        if eval(minutes) < 0 or eval(minutes) > 59:
+            error = True
+    if not error:
         if len(hours) == 1:
             hour1.number = 0
             hour2.number = eval(hours[0])
         elif len(hours) == 2:
             hour1.number = eval(hours[0])
             hour2.number = eval(hours[1])
-        minutes = numbers[1]
         if len(minutes) == 1:
-            minute2.number = 0
+            minute1.number = 0
             minute2.number = eval(minutes[0])
         elif len(minutes) == 2:
             minute1.number = eval(minutes[0])
             minute2.number = eval(minutes[1])
+        return True
 
 
 def main():
@@ -166,25 +198,29 @@ def main():
     hour1, hour2, minute1, minute2 = initializeDigits(gui)
     hour1.number, hour2.number = 1, 2
     m1 = Point(0, 0)
-    am = [False]
+    am = [True]
     hour1.setTime()
     hour2.setTime()
     minute1.setTime()
     minute2.setTime()
+    amChange = True
     while not gui.quit.clicked(m1):
         if gui.upHour.clicked(m1):
             hour2.number += 1
-        if gui.upMinute.clicked(m1):
+        elif gui.upMinute.clicked(m1):
             minute2.number += 1
-        if gui.downHour.clicked(m1):
+            amChange = False
+        elif gui.downHour.clicked(m1):
+            hour2.number += -1
+        elif gui.downMinute.clicked(m1):
             minute2.number += -1
-        if gui.downMinute.clicked(m1):
-            minute2.number += -1
-        if gui.change.clicked(m1):
+            amChange = False
+        elif gui.change.clicked(m1):
             takeEntry(gui.entry.getText(), hour1, hour2, minute1, minute2)
             gui.entry.setText('')
-        checkHour(gui, hour1, hour2, am)
-        checkMinute(minute1, minute2, hour1, hour2, am, gui)
+            amChange = False
+        amChange = checkMinute(minute1, minute2, hour2, amChange)
+        amChange = checkHour(gui, hour1, hour2, am, amChange)
         hour1.setTime()
         hour2.setTime()
         minute1.setTime()
