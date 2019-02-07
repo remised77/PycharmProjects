@@ -165,3 +165,34 @@ class Tank:
         if player:
             health = Rectangle(Point(0,0), Point(0,0))
 
+
+
+  for point in self.ground_points:
+            if sqrt((hit.getX() - point.getX())**2 + (hit.getY() - point.getX() < 50)**2) < 49:
+                self.ground_points.remove(point)
+        temp_circle = []
+        for x in range(-50, 50):
+            y = int(sqrt(50 * 50 - x * x))
+            temp_circle.append(Point(int(hit.getX() + x), int(hit.getY() + y)))
+            temp_circle.append(Point(int(hit.getX() + x), int(hit.getY() - y)))
+        filler = []
+        for i in range(0, len(temp_circle)-1):
+            for i2 in range(0, int(temp_circle[i+1].getY() - temp_circle[i].getY())):
+                filler.append(Point(temp_circle[i].getX(), temp_circle[i].getY()+i2))
+        for item in filler:
+            temp_circle.append(item)
+        intersections = []
+        temp_circle = list(set(temp_circle))
+        print(temp_circle)
+        print(self.ground_points)
+        for point in self.ground_points:
+            if point in temp_circle:
+                intersections.append(point)
+        print(intersections)
+        for i in range(intersections[0].getX(), intersections[1].getX()):
+            for point in self.ground_points:
+                if int(point.getX()) == i and point.getY() > 0:
+                    self.ground_points.remove(point)
+        self.gui.splode(hit)
+
+
