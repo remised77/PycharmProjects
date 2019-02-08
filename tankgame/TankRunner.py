@@ -47,10 +47,12 @@ class Ground:
 
     def __init__(self, gui):
         self.gui = gui
-        self.initial_ground = Rectangle(Point(0, 400), Point(1400, 800))
-        self.initial_ground.setFill('green')
-        self.initial_ground.setOutline('green')
-        self.initial_ground.draw(self.gui.win)
+        for x in range(0, 1401):
+            for y in range(400, 801):
+                point = Point(x, y)
+                point.setOutline('green')
+                point.draw(self.gui.win)
+
 
     def bomb(self, hit):
         x=1
@@ -88,8 +90,13 @@ def main():
     tank2 = Tank('blue', Point(1200, 300), gui)
     ground.bomb(Point(800, 400))
     tank1.move_tank()
-    print(gui.win.getPixel(10, 700))
+    x = Point(10,700)
+    #gui.win.plot(10, 700, 'red')
+    x.setFill('red')
+    x.draw(gui.win)
+    print(x.config['outline'])
     gui.win.getMouse()
+
 
 main()
 
