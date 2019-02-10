@@ -1,0 +1,38 @@
+# File: Lab10_PieceClass.py
+# Written by Remi Seddigh and Luke Shannon
+# 2019–02–09
+# Piece Superclass for chessboard
+
+from graphics import *
+from math import *
+
+class Piece:
+
+    def __init__(self, color, square): # taking 'square' as an object with name instance variable (f8 = Square("f8");
+                                                                                                    # f8.name == "f8")
+
+        """Piece superclass for any piece on a chessboard, with instance variables denoting color and its position on
+        the board, e.g.:
+
+        pawn = Piece("white","f8")"""
+
+        self.color = color
+        self.square = square
+
+        x = ord(square.name[0])-97
+        y = square.name[1]-1
+
+        self.location = Point(x,y)
+
+
+    def move(self, square):
+
+        """Moves piece to square indicated as function parameter, e.g.:
+        knight.move(h3)"""
+
+
+        x = ord(square.name[0]) - 97
+        y = square.name[1] - 1
+
+        self.location = Point(x, y)
+        self.square = square
